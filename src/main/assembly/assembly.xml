@@ -1,0 +1,36 @@
+<assembly>
+    <id>bin</id>
+    <formats>
+        <format>dir</format>
+        <format>tar.gz</format>
+    </formats>
+    <includeBaseDirectory>true</includeBaseDirectory>
+    <fileSets>
+        <fileSet>
+            <directory>src/main/package/etc</directory>
+            <outputDirectory>/etc</outputDirectory>
+            <directoryMode>0775</directoryMode>
+            <fileMode>0664</fileMode>
+        </fileSet>
+        <fileSet>
+            <directory>src/main/package/log</directory>
+            <outputDirectory>/log</outputDirectory>
+            <directoryMode>0775</directoryMode>
+            <fileMode>0664</fileMode>
+        </fileSet>
+        <fileSet>
+            <directory>src/main/package/bin</directory>
+            <outputDirectory>/bin</outputDirectory>
+            <directoryMode>0775</directoryMode>
+            <fileMode>0775</fileMode>
+            <filtered>true</filtered>
+        </fileSet>
+    </fileSets>
+    <files>
+        <file>
+            <source>target/${project.build.finalName}.jar</source>
+            <outputDirectory>bin</outputDirectory>
+            <fileMode>0775</fileMode>
+        </file>
+    </files>
+</assembly>
