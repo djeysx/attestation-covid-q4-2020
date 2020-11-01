@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head lang="fr">
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">    
+    <link rel="shortcut icon" href="../static/anonymous_user-32.ico" type="image/x-icon">
+	<link rel="icon" href="../static/anonymous_user-32.ico" type="image/x-icon">
+
+
+<!-- Bootstrap -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.5.3/dist/css/bootstrap.min.css" integrity="sha384-TX8t27EcRE3e/ihU7zmQxVncDAy5uIKz4rEkgIXeMed4M0jlfIDPvg6uqKI2xXr2" crossorigin="anonymous">
+<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js" integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj" crossorigin="anonymous"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@4.5.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-ho+j7jyWK8fNQe+A12Hb8AhRq26LrZ/JpcUGGOn+Y7RsweNrtN/tE3MoK7ZeZDyx" crossorigin="anonymous"></script>
+
+<link rel="stylesheet" href="../static/main.css">
+
+    <title>Générateur d'attestation de déplacement dérogatoire - COVID-19</title>
+    
+<style>
+.border-solid-1{
+	border-style: none;
+	 border-width: 0px;
+ }
+ 
+/* radio fieldset */
+/* https://stackoverflow.com/questions/4641752/css-how-to-style-a-selected-radio-buttons-label */
+.radio-toolbar input[type="radio"] {
+  display: none;
+}
+
+.radio-toolbar label {
+  display: inline-block;
+  //background-color: #ddd;
+  //padding: 4px 11px;
+  //font-family: Arial;
+  //font-size: 16px;
+  cursor: pointer;
+}
+
+.radio-toolbar input[type="radio"]:checked+label {
+  background-color: #b55;
+  //filter: invert(100%);
+  //-webkit-filter: invert(100%);
+}
+</style>
+</head>
+<body>
+  <header role="banner" class="wrapper">
+  <picture>
+    <source srcset="../static/anonymous_user-128.png" media="(prefers-color-scheme: dark)">
+      <img src="../static/anonymous_user-128.png" class="logo" role="presentation" aria-hidden="true">
+      </picture>
+      <div>
+        <h1 class="flex flex-wrap">
+          <span class="covid-title"> COVID-19 </span>
+          <span class="covid-subtitle"> Attestation de déplacement dérogatoire </span>
+        </h1>
+      </div>
+      <p>Utilisateur : <b>Demo Demo</b></p>
+  </header>	
+	
+ <div class="container-fluid">
+ <form>
+	 
+<fieldset id="reason-fieldset" class="fieldset fieldset-error radio-toolbar">
+	<legend class="legend titre-3">Choisissez un motif de déplacement</legend>
+	<div class="form-checkbox align-items-center border-solid-1">
+		<input class="form-check-input" type="radio" id="checkbox-travail" name="field-reason" value="travail" >
+			<label for="checkbox-travail" class="form-checkbox-label"><b>[Travail]</b>
+				Déplacements entre le domicile et le lieu d’exercice de l’activité professionnelle ou un établissement
+				d’enseignement ou de formation, déplacements professionnels ne pouvant être différés
+				, déplacements pour un concours ou un examen
+			</label>
+	</div>
+	<div class="form-checkbox align-items-center border-solid-1">
+		<input class="form-check-input" type="radio" id="checkbox-achats" name="field-reason" value="achats">
+			<label for="checkbox-achats" class="form-checkbox-label"><b>[Achats]</b>
+				Déplacements pour effectuer des achats de fournitures nécessaires à l'activité professionnelle, des achats de
+				première nécessité
+				dans des établissements dont les activités demeurent autorisées, le retrait de commande et les livraisons à
+				domicile 
+			</label>
+	</div>
+	<div class="form-checkbox align-items-center border-solid-1">
+		<input class="form-check-input" type="radio" id="checkbox-sante" name="field-reason" value="sante">
+			<label for="checkbox-sante" class="form-checkbox-label"><b>[Santé]</b>
+				Consultations, examens et soins ne pouvant être assurés à distance et l’achat
+				de médicaments </label>
+	</div>
+	<div class="form-checkbox align-items-center border-solid-1">
+		<input class="form-check-input" type="radio" id="checkbox-famille" name="field-reason" value="famille">
+			<label for="checkbox-famille" class="form-checkbox-label"><b>[Famille]</b>
+				Déplacements pour motif familial impérieux, pour l'assistance aux
+				personnes vulnérables et précaires ou la garde d'enfants </label>
+	</div>
+	<div class="form-checkbox align-items-center border-solid-1">
+		<input class="form-check-input" type="radio" id="checkbox-handicap" name="field-reason" value="handicap">
+			<label for="checkbox-handicap" class="form-checkbox-label"><b>[Handicap]</b>
+				Déplacement des personnes en situation de handicap et leur accompagnant </label>
+	</div>
+	<div class="form-checkbox align-items-center border-solid-1">
+		<input class="form-check-input" type="radio" id="checkbox-sport_animaux" name="field-reason" value="sport_animaux">
+			<label for="checkbox-sport_animaux" class="form-checkbox-label"><b>[Sport Animaux]</b>
+				Déplacements brefs, dans la limite d'une heure quotidienne et dans un
+				rayon maximal d'un kilomètre autour du domicile, liés soit à l'activité physique individuelle des personnes, à
+				l'exclusion de toute pratique sportive collective et de toute proximité avec d'autres personnes, soit à la promenade
+				avec les seules personnes regroupées dans un même domicile, soit aux besoins des animaux de compagnie</label>
+	</div>
+	<div class="form-checkbox align-items-center border-solid-1">
+		<input class="form-check-input" type="radio" id="checkbox-convocation" name="field-reason" value="convocation">
+			<label for="checkbox-convocation" class="form-checkbox-label"><b>[Convocation]</b>
+				Convocation judiciaire ou administrative et pour se rendre dans un
+				service public </label>
+	</div>
+	<div class="form-checkbox align-items-center border-solid-1">
+		<input class="form-check-input" type="radio" id="checkbox-missions" name="field-reason" value="missions">
+			<label for="checkbox-missions" class="form-checkbox-label"><b>[Mission]</b>
+			Participation à des missions d'intérêt général sur demande de l'autorité
+				administrative </label>
+	</div>
+	<div class="form-checkbox align-items-center border-solid-1">
+		<input class="form-check-input" type="radio" id="checkbox-enfants" name="field-reason" value="enfants">
+			<label for="checkbox-enfants" class="form-checkbox-label"><b>[Enfants]</b>
+				Déplacement pour chercher les enfants à l’école et à l’occasion de leurs
+				activités périscolaires </label>
+	</div>
+</fieldset>
+</form>
+
+</div>
+
+</body>
+</html>

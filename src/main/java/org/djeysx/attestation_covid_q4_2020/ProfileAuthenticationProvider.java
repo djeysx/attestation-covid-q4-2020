@@ -15,6 +15,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.authentication.AuthenticationProvider;
+import org.springframework.security.authentication.BadCredentialsException;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.stereotype.Component;
@@ -30,39 +32,45 @@ public class ProfileAuthenticationProvider implements AuthenticationProvider {
     protected Path profilesPath;
 
     @PostConstruct
-    public void init_AceLdapAuthenticationProvider() {
+    public void init() {
         Verify.verify(Files.isDirectory(profilesPath), "Dossier profiles absent [%s]", profilesPath);
+        log.info("init OK [{}]", profilesPath);
     }
 
     @Override
     public Authentication authenticate(Authentication authentication) throws AuthenticationException {
-        String name = authentication.getName();
-        String password = authentication.getCredentials().toString();
-        checkUsernameFileValidity(name);
-        UserProfile userProfile = readUserProfile(name);
+        try {
+            String name = authentication.getName();
+            String password = authentication.getCredentials().toString();
+            log.info("Try Login [{}:{}]", name, password);
+            checkUsernameFileValidity(name);
+            UserProfile userProfile = readUserProfile(name);
 
-        Verify.verify(userProfile.getPassword().equals(password), "Authentication failed");
+            Verify.verify(userProfile.getPassword().equals(password), "Authentication failed");
 
-        return new UserProfileAuthenticationToken(name, null, ImmutableList.of(), userProfile);
+            return new UserProfileAuthenticationToken(name, null, ImmutableList.of(), userProfile);
+        } catch (RuntimeException e) {
+            throw new BadCredentialsException("Access Denied", e);
+        }
     }
 
-    private UserProfile readUserProfile(String name) {
-        UserProfile userProfile = new UserProfile();
+    protected UserProfile readUserProfile(String name) {
         Path profilePath = profilesPath.resolve(name + ".properties");
         Properties props = new Properties();
         try (InputStream in = Files.newInputStream(profilePath)) {
             props.load(in);
-            userProfile.nom = checkNotNull(props.getProperty("nom"), "Le profile ne contient pas [nom]");
-            userProfile.prenom = checkNotNull(props.getProperty("nom"), "Le profile ne contient pas [prenom]");
-            userProfile.dateNaissance = checkNotNull(props.getProperty("nom"), "Le profile ne contient pas [dateNaissance]");
-            userProfile.lieuNaissance = checkNotNull(props.getProperty("nom"), "Le profile ne contient pas [lieuNaissance]");
-            userProfile.adresse = checkNotNull(props.getProperty("nom"), "Le profile ne contient pas [adresse]");
-            userProfile.ville = checkNotNull(props.getProperty("nom"), "Le profile ne contient pas [ville]");
-            userProfile.codePostal = checkNotNull(props.getProperty("nom"), "Le profile ne contient pas [codePostal]");
+            UserProfile userProfile = new UserProfile();
+            userProfile.nom = checkNotNull(props.getProperty("nom"), "profile manque attr [nom]");
+            userProfile.prenom = checkNotNull(props.getProperty("prenom"), "profile manque attr [prenom]");
+            userProfile.dateNaissance = checkNotNull(props.getProperty("dateNaissance"), "profile manque attr [dateNaissance]");
+            userProfile.lieuNaissance = checkNotNull(props.getProperty("lieuNaissance"), "profile manque attr [lieuNaissance]");
+            userProfile.adresse = checkNotNull(props.getProperty("adresse"), "profile manque attr [adresse]");
+            userProfile.ville = checkNotNull(props.getProperty("ville"), "profile manque attr [ville]");
+            userProfile.codePostal = checkNotNull(props.getProperty("codePostal"), "profile manque attr [codePostal]");
+            return userProfile;
         } catch (IOException e) {
             throw new UncheckedIOException(e);
         }
-        return userProfile;
     }
 
     protected void checkUsernameFileValidity(String name) {
@@ -78,7 +86,7 @@ public class ProfileAuthenticationProvider implements AuthenticationProvider {
 
     @Override
     public boolean supports(Class<?> authentication) {
-        return authentication.equals(UserProfileAuthenticationToken.class);
+        return authentication.equals(UsernamePasswordAuthenticationToken.class);
     }
 
 }
