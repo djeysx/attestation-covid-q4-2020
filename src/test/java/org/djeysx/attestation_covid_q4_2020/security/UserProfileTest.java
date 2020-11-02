@@ -1,7 +1,8 @@
-package org.djeysx.attestation_covid_q4_2020;
+package org.djeysx.attestation_covid_q4_2020.security;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+import org.djeysx.attestation_covid_q4_2020.security.UserProfile;
 import org.junit.jupiter.api.Test;
 
 public class UserProfileTest {

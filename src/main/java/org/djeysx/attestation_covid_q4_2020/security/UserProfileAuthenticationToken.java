@@ -1,4 +1,4 @@
-package org.djeysx.attestation_covid_q4_2020;
+package org.djeysx.attestation_covid_q4_2020.security;
 
 import java.util.Collection;
 

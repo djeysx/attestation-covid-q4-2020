@@ -1,4 +1,4 @@
-package org.djeysx.attestation_covid_q4_2020;
+package org.djeysx.attestation_covid_q4_2020.security;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
