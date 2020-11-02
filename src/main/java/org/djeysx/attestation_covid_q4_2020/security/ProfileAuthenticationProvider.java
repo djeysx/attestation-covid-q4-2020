@@ -7,6 +7,7 @@ import java.io.InputStream;
 import java.io.UncheckedIOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.Collection;
 import java.util.Properties;
 
 import javax.annotation.PostConstruct;
@@ -19,13 +20,17 @@ import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Component;
 
 import com.google.common.base.Verify;
 import com.google.common.collect.ImmutableList;
 
 @Component
-public class ProfileAuthenticationProvider implements AuthenticationProvider {
+public class ProfileAuthenticationProvider implements AuthenticationProvider, UserDetailsService {
     private final Logger log = LoggerFactory.getLogger(this.getClass());
 
     @Value("${auth.profiles.path}")
@@ -43,18 +48,18 @@ public class ProfileAuthenticationProvider implements AuthenticationProvider {
             String name = authentication.getName();
             String password = authentication.getCredentials().toString();
             log.info("Try Login [{}:{}]", name, password);
-            checkUsernameFileValidity(name);
             UserProfile userProfile = readUserProfile(name);
 
             Verify.verify(userProfile.getPassword().equals(password), "Authentication failed");
 
-            return new UserProfileAuthenticationToken(name, null, ImmutableList.of(), userProfile);
+            return new UserProfileAuthenticationToken(name, null, ImmutableList.of(), null);
         } catch (RuntimeException e) {
             throw new BadCredentialsException("Access Denied", e);
         }
     }
 
-    protected UserProfile readUserProfile(String name) {
+    public UserProfile readUserProfile(String name) {
+        checkUsernameFileValidity(name);
         Path profilePath = profilesPath.resolve(name + ".properties");
         Properties props = new Properties();
         try (InputStream in = Files.newInputStream(profilePath)) {
@@ -74,6 +79,7 @@ public class ProfileAuthenticationProvider implements AuthenticationProvider {
     }
 
     protected void checkUsernameFileValidity(String name) {
+        log.info("read username[{}]", name);
         checkNotNull(name, "name is null");
         Verify.verify(name.length() >= 2, "name size too short");
         for (int pos = 0, len = name.length(); pos < len; pos++) {
@@ -89,4 +95,53 @@ public class ProfileAuthenticationProvider implements AuthenticationProvider {
         return authentication.equals(UsernamePasswordAuthenticationToken.class);
     }
 
+    @Override
+    public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
+        UserProfile userProfile;
+        try {
+            checkUsernameFileValidity(username);
+            userProfile = readUserProfile(username);
+        } catch (Exception e) {
+            throw new UsernameNotFoundException("No user", e);
+        }
+
+        return new UserDetails() {
+            private static final long serialVersionUID = 1317940575014416813L;
+
+            @Override
+            public Collection<? extends GrantedAuthority> getAuthorities() {
+                return null;
+            }
+
+            @Override
+            public String getPassword() {
+                return userProfile.getPassword();
+            }
+
+            @Override
+            public String getUsername() {
+                return username;
+            }
+
+            @Override
+            public boolean isAccountNonExpired() {
+                return true;
+            }
+
+            @Override
+            public boolean isAccountNonLocked() {
+                return true;
+            }
+
+            @Override
+            public boolean isCredentialsNonExpired() {
+                return true;
+            }
+
+            @Override
+            public boolean isEnabled() {
+                return true;
+            }
+        };
+    }
 }

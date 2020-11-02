@@ -20,7 +20,11 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
                 .and()//
                 .logout().permitAll()//
                 .and()//
-                .csrf().disable();
+                .rememberMe().key("QPWOEIRUTZ").tokenValiditySeconds(60 * 60 * 24 * 7)// 1 semaine
+                .userDetailsService(authProvider)
+                .and()//
+                .csrf().disable()//
+        ;
     }
 
     @Autowired
@@ -30,4 +34,5 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
     public void configureGlobal(AuthenticationManagerBuilder auth) throws Exception {
         auth.authenticationProvider(authProvider);
     }
+    
 }
