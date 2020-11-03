@@ -2,15 +2,15 @@
 
 cd `dirname $0`
 
-export JAVA_HOME=/ccv/opt/dsi_editique/jdk8
+export JAVA_HOME=/usr/lib/jvm/java-11-openjdk-amd64
 export PATH=$JAVA_HOME/bin:$PATH
 JAVA=java
 OPTS="-Xmx192M"
 
-PORT=8083
+PORT=8081
 APPNAME=${project.artifactId}
 JARFILE=${project.build.finalName}.jar
-APPOPTS="--spring.config.additional-location=file:../etc/application.yaml --port=$PORT"
+APPOPTS="--spring.config.additional-location=file:../etc/application.properties --port=$PORT"
 
 CMD="$JAVA $OPTS -jar $JARFILE $APPOPTS"
 
