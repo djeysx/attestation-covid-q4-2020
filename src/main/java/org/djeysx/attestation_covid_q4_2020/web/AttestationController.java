@@ -37,17 +37,12 @@ public class AttestationController {
 
     final DateTimeFormatter filenameDateFormat = DateTimeFormatter.ofPattern("YYYY-MM-dd_HH-mm");
 
-    @RequestMapping("/")
-    public String index() {
-        return "redirect:/attestationCovid/";
-    }
-
     @RequestMapping(value = "/logout")
     public String logout() {
         return "redirect:/login?logout";
     }
 
-    @RequestMapping(path = "/attestationCovid/", method = RequestMethod.GET)
+    @RequestMapping(path = "/", method = RequestMethod.GET)
     public String index(Model model, HttpServletRequest request) {
         log.info("GET ip[{}] user[{}]", request.getRemoteAddr(), request.getRemoteUser());
         UserProfile userProfile = getCurrentUserProfile();
@@ -56,7 +51,7 @@ public class AttestationController {
         return "index";
     }
 
-    @RequestMapping(path = "/attestationCovid/", method = RequestMethod.POST)
+    @RequestMapping(path = "/", method = RequestMethod.POST)
     public ResponseEntity<byte[]> generatePdf(HttpServletRequest request, Model model,
             @RequestParam(required = true, name = "field-reason") Reason reason,
             @RequestParam(required = false, name = "field-time") int modTime) throws Exception {
@@ -75,7 +70,7 @@ public class AttestationController {
         HttpHeaders headers = new HttpHeaders();
         headers.setContentLength(pdf.length);
         headers.set("Content-Type", APPLICATION_PDF_VALUE);
-        String filename = "attestation-" + dateTime.format(filenameDateFormat) + "_" + reason + ".pdf";
+        String filename = "attestCovid-" + dateTime.format(filenameDateFormat) + "_" + reason + ".pdf";
         headers.set("Content-Disposition", "attachment; filename=\"" + filename + "\"");
         return new ResponseEntity<>(pdf, headers, HttpStatus.OK);
     }

@@ -60,6 +60,7 @@ public class ProfileAuthenticationProvider implements AuthenticationProvider, Us
 
     public UserProfile readUserProfile(String name) {
         checkUsernameFileValidity(name);
+        log.info("read user[{}]", name);
         Path profilePath = profilesPath.resolve(name + ".properties");
         Properties props = new Properties();
         try (InputStream in = Files.newInputStream(profilePath)) {
@@ -79,7 +80,6 @@ public class ProfileAuthenticationProvider implements AuthenticationProvider, Us
     }
 
     protected void checkUsernameFileValidity(String name) {
-        log.info("read username[{}]", name);
         checkNotNull(name, "name is null");
         Verify.verify(name.length() >= 2, "name size too short");
         for (int pos = 0, len = name.length(); pos < len; pos++) {
@@ -99,7 +99,6 @@ public class ProfileAuthenticationProvider implements AuthenticationProvider, Us
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
         UserProfile userProfile;
         try {
-            checkUsernameFileValidity(username);
             userProfile = readUserProfile(username);
         } catch (Exception e) {
             throw new UsernameNotFoundException("No user", e);

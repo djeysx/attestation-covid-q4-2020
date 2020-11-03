@@ -5,8 +5,10 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.UncheckedIOException;
+import java.sql.Timestamp;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.Calendar;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -50,11 +52,15 @@ public class PdfGeneratorService {
             document.getDocumentInformation().setProducer("DNUM/SDIT");
             document.getDocumentInformation().setCreator("");
             document.getDocumentInformation().setAuthor("Ministère de l'intérieur");
+            Calendar creationCalendar = Calendar.getInstance();
+            creationCalendar.setTime(Timestamp.valueOf(fromDate));
+            document.getDocumentInformation().setCreationDate(creationCalendar);
+            document.setVersion(1.7f);
 
             // qr
             String qrData = buildQrData(userProfile, reason, fromDate);
             PDImageXObject pdImage = LosslessFactory.createFromImage(document, createQrImage(qrData));
-            
+
             // formulaire
             PDPage page1 = document.getPage(0);
 
@@ -70,15 +76,15 @@ public class PdfGeneratorService {
                 drawText(contentStream, userProfile.ville, 105, 174, villeSize);
                 drawText(contentStream, fromDate.format(formatterDate), 91, 152);
                 drawText(contentStream, fromDate.format(formatterTime), 264, 152);
-                // qr original size = 92f   modified=115f
-                contentStream.drawImage(pdImage, page1.getMediaBox().getWidth() - 156f, 100f, 108f, 108f);
+                // qr original size = 92f modified=115f
+                contentStream.drawImage(pdImage, page1.getMediaBox().getWidth() - 156f, 100f, 105f, 105f);
             }
             // page 2
             PDPage page2 = new PDPage(page1.getMediaBox());
             document.addPage(page2);
             try (PDPageContentStream contentStream = new PDPageContentStream(document, page2, AppendMode.APPEND, true)) {
-                // qr
-                contentStream.drawImage(pdImage, 15f, page2.getMediaBox().getHeight() - 380f, 365f, 365f);
+                // qr pos source= 50,Height()-350 , 300x300
+                contentStream.drawImage(pdImage, 50f, page2.getMediaBox().getHeight() - 350f, 320f, 320f);
             }
 
             ByteArrayOutputStream pdfBuffer = new ByteArrayOutputStream();
