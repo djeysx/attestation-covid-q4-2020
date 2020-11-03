@@ -1,5 +1,6 @@
 package org.djeysx.attestation_covid_q4_2020.service;
 
+import java.awt.image.BufferedImage;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -15,6 +16,7 @@ import org.apache.pdfbox.pdmodel.PDPageContentStream;
 import org.apache.pdfbox.pdmodel.PDPageContentStream.AppendMode;
 import org.apache.pdfbox.pdmodel.font.PDFont;
 import org.apache.pdfbox.pdmodel.font.PDType1Font;
+import org.apache.pdfbox.pdmodel.graphics.image.LosslessFactory;
 import org.apache.pdfbox.pdmodel.graphics.image.PDImageXObject;
 import org.djeysx.attestation_covid_q4_2020.security.UserProfile;
 import org.springframework.stereotype.Component;
@@ -39,7 +41,6 @@ public class PdfGeneratorService {
         try (InputStream resInput = getClass().getResourceAsStream(RESOURCE_PDF);
                 PDDocument pdfTemplate = PDDocument.load(resInput);
                 PDDocument document = new PDDocument()) {
-            document.setVersion(1.7f);
             document.importPage(pdfTemplate.getPage(0));
             // Meta-data
             document.getDocumentInformation().setTitle("COVID-19 - Déclaration de déplacement");
@@ -52,9 +53,8 @@ public class PdfGeneratorService {
 
             // qr
             String qrData = buildQrData(userProfile, reason, fromDate);
-            byte[] qrImage = createQrPng(qrData);
-            PDImageXObject pdImage = PDImageXObject.createFromByteArray(document, qrImage, null);
-
+            PDImageXObject pdImage = LosslessFactory.createFromImage(document, createQrImage(qrData));
+            
             // formulaire
             PDPage page1 = document.getPage(0);
 
@@ -70,8 +70,8 @@ public class PdfGeneratorService {
                 drawText(contentStream, userProfile.ville, 105, 174, villeSize);
                 drawText(contentStream, fromDate.format(formatterDate), 91, 152);
                 drawText(contentStream, fromDate.format(formatterTime), 264, 152);
-                // qr
-                contentStream.drawImage(pdImage, page1.getMediaBox().getWidth() - 156f, 100f, 115f, 115f);
+                // qr original size = 92f   modified=115f
+                contentStream.drawImage(pdImage, page1.getMediaBox().getWidth() - 156f, 100f, 108f, 108f);
             }
             // page 2
             PDPage page2 = new PDPage(page1.getMediaBox());
@@ -110,16 +110,14 @@ public class PdfGeneratorService {
         return sb.toString();
     }
 
-    protected byte[] createQrPng(String qrData) {
+    protected BufferedImage createQrImage(String qrData) {
         try {
             QRCodeWriter qrCodeWriter = new QRCodeWriter();
             Map<EncodeHintType, Object> hints = new HashMap<>();
-            hints.put(EncodeHintType.ERROR_CORRECTION, ErrorCorrectionLevel.L);
+            hints.put(EncodeHintType.ERROR_CORRECTION, ErrorCorrectionLevel.M);
             hints.put(EncodeHintType.MARGIN, 1);
             BitMatrix bitMatrix = qrCodeWriter.encode(qrData, BarcodeFormat.QR_CODE, 220, 220, hints);
-            ByteArrayOutputStream qrImageBuf = new ByteArrayOutputStream();
-            MatrixToImageWriter.writeToStream(bitMatrix, "PNG", qrImageBuf);
-            return qrImageBuf.toByteArray();
+            return MatrixToImageWriter.toBufferedImage(bitMatrix);
         } catch (Exception e) {
             throw new RuntimeException(e);
         }

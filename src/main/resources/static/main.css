@@ -85,7 +85,7 @@ h2 {
 }
 
 footer {
-  margin-top: 40px;
+  margin-top: 20px;
   background: white;
 }
 
@@ -230,6 +230,22 @@ p {
 .btn-attestation:hover {
   background-color: #3031C1;
 }
+
+/* + */
+.btn-attestation-urg {
+  padding: 0.9em;
+  font-size: 1.2em;
+  font-weight: bold;
+  color: white;
+  background-color: #910100;
+  border-radius: 0.5em;
+}
+
+.btn-attestation-urg:hover {
+  background-color: #C13130;
+}
+/* + */
+
 
 .github {
   font-size: 0.7em;

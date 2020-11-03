@@ -44,6 +44,20 @@
   //-webkit-filter: invert(100%);
 }
 </style>
+
+<script>
+function generateUrg(reason, modtime){
+	var radios = document.f.elements['field-reason'];
+    for (var i=0, len=radios.length; i<len; i++) {
+        if (radios[i].value === reason){
+			radios[i].checked=true;
+		}
+	}
+	document.f.elements['field-time'].value = modtime;
+    document.f.submit();
+}
+</script>
+
 </head>
 <body>
   <header role="banner" class="wrapper">
@@ -57,11 +71,11 @@
           <span class="covid-subtitle"> Attestation de déplacement dérogatoire </span>
         </h1>
       </div>
-      <p>Utilisateur : <b th:text="${#userName}">Demo Demo</b></p>
+      <p>Utilisateur : <b th:text="${userName}">Demo Demo</b></p>
   </header>	
 	
  <div class="container-fluid">
- <form method="POST" target="_blank">
+ <form name="f" method="POST" target="_blank">
 	 
 <fieldset id="reason-fieldset" class="fieldset fieldset-cadre radio-toolbar">
 	<legend class="legend titre-3">Choisissez un motif de déplacement</legend>
@@ -131,9 +145,9 @@
 	<legend class="legend titre-3">Choisissez une heure</legend>
 	<div class="align-items-center">
 		<select class="form-control" id="select-time" name="field-time">
-			<option value="-25">-25 minutes</option>						
-			<option value="-15">-15 minutes</option>						
-			<option value="-5">-5 minutes</option>
+			<option value="-30">-30 minutes</option>						
+			<option value="-20">-20 minutes</option>						
+			<option value="-10">-10 minutes</option>						
 			<option value="0" selected="selected">Maintenant</option>
 			<option value="+5">+5 minutes</option>
 			<option value="+10">+10 minutes</option>						
@@ -156,6 +170,20 @@
 	</button>
 </p>
 
+<p class="text-center mt-5">
+	<button type="button" id="generate-btn-urg" class="btn btn-primary btn-attestation-urg" onclick="generateUrg('sport_animaux','-20')">
+		<span>
+			<svg class="svg-inline--fa fa-file-pdf fa-w-12 inline-block mr-1" aria-hidden="true" focusable="false"
+				data-prefix="fa" data-icon="file-pdf" role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 384 512"
+				data-fa-i2svg="">
+				<path fill="currentColor"
+					d="M181.9 256.1c-5-16-4.9-46.9-2-46.9 8.4 0 7.6 36.9 2 46.9zm-1.7 47.2c-7.7 20.2-17.3 43.3-28.4 62.7 18.3-7 39-17.2 62.9-21.9-12.7-9.6-24.9-23.4-34.5-40.8zM86.1 428.1c0 .8 13.2-5.4 34.9-40.2-6.7 6.3-29.1 24.5-34.9 40.2zM248 160h136v328c0 13.3-10.7 24-24 24H24c-13.3 0-24-10.7-24-24V24C0 10.7 10.7 0 24 0h200v136c0 13.2 10.8 24 24 24zm-8 171.8c-20-12.2-33.3-29-42.7-53.8 4.5-18.5 11.6-46.6 6.2-64.2-4.7-29.4-42.4-26.5-47.8-6.8-5 18.3-.4 44.1 8.1 77-11.6 27.6-28.7 64.6-40.8 85.8-.1 0-.1.1-.2.1-27.1 13.9-73.6 44.5-54.5 68 5.6 6.9 16 10 21.5 10 17.9 0 35.7-18 61.1-61.8 25.8-8.5 54.1-19.1 79-23.2 21.7 11.8 47.1 19.5 64 19.5 29.2 0 31.2-32 19.7-43.4-13.9-13.6-54.3-9.7-73.6-7.2zM377 105L279 7c-4.5-4.5-10.6-7-17-7h-6v128h128v-6.1c0-6.3-2.5-12.4-7-16.9zm-74.1 255.3c4.1-2.7-2.5-11.9-42.8-9 37.1 15.8 42.8 9 42.8 9z"></path>
+			</svg><!-- <i class="fa fa-file-pdf inline-block mr-1"></i> Font Awesome fontawesome.com -->
+			Automatic [Promenade -20min]
+		</span>
+	</button>
+</p>
+
 </form>
 
 </div>
@@ -164,15 +192,17 @@
 <p class="github">
 	Le code source de ce service est consultable sur
 	<a href="https://github.com/djeysx/attestation-covid-q4-2020" class="github-link">GitHub</a>.
-</p>
-<p class="github">
+<br>
 	Le code source du service officiel est consultable sur
 	<a href="https://github.com/LAB-MI/attestation-deplacement-derogatoire-q4-2020" class="github-link">GitHub</a>.
-</p><p class="label-mi"> Ministère du bricolage </p>
+</p>
+
+<p class="label-mi"> Ministère du bricolage 
 <picture class="center">
 	<source srcset="../anonymous_user-64.png" media="(prefers-color-scheme: dark)">
 		<img class="center" src="../anonymous_user-64.png" alt="logo ano">
 </picture>
+</p>
 </div>
 
 <footer role="contentinfo" class="main-footer">

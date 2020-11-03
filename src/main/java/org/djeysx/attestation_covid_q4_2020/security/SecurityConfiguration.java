@@ -20,8 +20,9 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
                 .and()//
                 .logout().permitAll()//
                 .and()//
-                .rememberMe().key("QPWOEIRUTZ").tokenValiditySeconds(60 * 60 * 24 * 7)// 1 semaine
+                .rememberMe().key("QPWOEIRUTZ").tokenValiditySeconds(60 * 60 * 24 * 90)// 90 jours
                 .userDetailsService(authProvider)
+                .alwaysRemember(true)//
                 .and()//
                 .csrf().disable()//
         ;

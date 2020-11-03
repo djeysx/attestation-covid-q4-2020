@@ -26,7 +26,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 
 @Controller
-public class HelloController {
+public class AttestationController {
     private final Logger log = LoggerFactory.getLogger(this.getClass());
 
     @Autowired
@@ -48,8 +48,8 @@ public class HelloController {
     }
 
     @RequestMapping(path = "/attestationCovid/", method = RequestMethod.GET)
-    public String index(Model model) {
-        log.info("GET");
+    public String index(Model model, HttpServletRequest request) {
+        log.info("GET ip[{}] user[{}]", request.getRemoteAddr(), request.getRemoteUser());
         UserProfile userProfile = getCurrentUserProfile();
         String userName = userProfile.prenom + " " + userProfile.nom;
         model.addAttribute("userName", userName);
@@ -60,7 +60,8 @@ public class HelloController {
     public ResponseEntity<byte[]> generatePdf(HttpServletRequest request, Model model,
             @RequestParam(required = true, name = "field-reason") Reason reason,
             @RequestParam(required = false, name = "field-time") int modTime) throws Exception {
-        log.info("POST");
+        log.info("POST ip[{}] user[{}] reason[{}] modTime[{}]", request.getRemoteAddr(), request.getRemoteUser(), reason,
+                modTime);
         UserProfile userProfile = getCurrentUserProfile();
         LocalDateTime dateTime = LocalDateTime.now();
         if (modTime < 0)
@@ -74,7 +75,7 @@ public class HelloController {
         HttpHeaders headers = new HttpHeaders();
         headers.setContentLength(pdf.length);
         headers.set("Content-Type", APPLICATION_PDF_VALUE);
-        String filename = "attestation-" + dateTime.format(filenameDateFormat) + ".pdf";
+        String filename = "attestation-" + dateTime.format(filenameDateFormat) + "_" + reason + ".pdf";
         headers.set("Content-Disposition", "attachment; filename=\"" + filename + "\"");
         return new ResponseEntity<>(pdf, headers, HttpStatus.OK);
     }
