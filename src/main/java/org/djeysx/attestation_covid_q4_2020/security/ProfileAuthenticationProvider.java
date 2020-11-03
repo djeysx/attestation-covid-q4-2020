@@ -60,7 +60,7 @@ public class ProfileAuthenticationProvider implements AuthenticationProvider, Us
 
     public UserProfile readUserProfile(String name) {
         checkUsernameFileValidity(name);
-        log.info("read user[{}]", name);
+        log.debug("read user[{}]", name);
         Path profilePath = profilesPath.resolve(name + ".properties");
         Properties props = new Properties();
         try (InputStream in = Files.newInputStream(profilePath)) {

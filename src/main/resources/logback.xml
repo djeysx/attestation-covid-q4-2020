@@ -1,0 +1,5 @@
+<configuration scan="false">
+
+  <include file="../etc/logback.xml" />
+  
+</configuration>
