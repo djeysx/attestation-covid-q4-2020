@@ -3,8 +3,9 @@ package org.djeysx.attestation_covid_q4_2020.security;
 import static com.google.common.base.Preconditions.checkNotNull;
 
 import java.io.IOException;
-import java.io.InputStream;
+import java.io.Reader;
 import java.io.UncheckedIOException;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Collection;
@@ -63,7 +64,7 @@ public class ProfileAuthenticationProvider implements AuthenticationProvider, Us
         log.debug("read user[{}]", name);
         Path profilePath = profilesPath.resolve(name + ".properties");
         Properties props = new Properties();
-        try (InputStream in = Files.newInputStream(profilePath)) {
+        try (Reader in = Files.newBufferedReader(profilePath, StandardCharsets.UTF_8)) {
             props.load(in);
             UserProfile userProfile = new UserProfile();
             userProfile.nom = checkNotNull(props.getProperty("nom"), "profile manque attr [nom]");
