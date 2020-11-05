@@ -23,6 +23,7 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
                 .rememberMe().key("QPWOEIRUTZ").tokenValiditySeconds(60 * 60 * 24 * 90)// 90 jours
                 .userDetailsService(authProvider)
                 .alwaysRemember(true)//
+                .useSecureCookie(true)//
                 .and()//
                 .csrf().disable()//
         ;
