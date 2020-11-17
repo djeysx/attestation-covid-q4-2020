@@ -34,122 +34,138 @@ import com.google.zxing.qrcode.decoder.ErrorCorrectionLevel;
 /* https://github.com/LAB-MI/attestation-deplacement-derogatoire-q4-2020/blob/main/src/js/pdf-util.js */
 public class PdfGeneratorService {
 
-    protected static final String RESOURCE_PDF = "/certificate.pdf";
-    final PDFont font = PDType1Font.HELVETICA;
-    final DateTimeFormatter formatterDate = DateTimeFormatter.ofPattern("dd/MM/YYYY");
-    final DateTimeFormatter formatterTime = DateTimeFormatter.ofPattern("HH:mm");
+	protected static final String RESOURCE_PDF = "/certificate.pdf";
+	final PDFont font = PDType1Font.HELVETICA;
+	final DateTimeFormatter formatterDate = DateTimeFormatter.ofPattern("dd/MM/YYYY");
+	final DateTimeFormatter formatterTime = DateTimeFormatter.ofPattern("HH:mm");
 
-    public byte[] generatePdf(UserProfile userProfile, Reason reason, LocalDateTime fromDate) {
-        try (InputStream resInput = getClass().getResourceAsStream(RESOURCE_PDF);
-                PDDocument pdfTemplate = PDDocument.load(resInput);
-                PDDocument document = new PDDocument()) {
-            document.importPage(pdfTemplate.getPage(0));
-            // Meta-data
-            document.getDocumentInformation().setTitle("COVID-19 - Déclaration de déplacement");
-            document.getDocumentInformation().setSubject("Attestation de déplacement dérogatoire");
-            document.getDocumentInformation()
-                    .setKeywords("covid19 covid-19 attestation déclaration déplacement officielle gouvernement");
-            document.getDocumentInformation().setProducer("DNUM/SDIT");
-            document.getDocumentInformation().setCreator("");
-            document.getDocumentInformation().setAuthor("Ministère de l'intérieur");
-            Calendar creationCalendar = Calendar.getInstance();
-            creationCalendar.setTime(Timestamp.valueOf(fromDate));
-            document.getDocumentInformation().setCreationDate(creationCalendar);
-            document.setVersion(1.7f);
+	public byte[] generatePdf(UserProfile userProfile, Reason reason, LocalDateTime fromDate) {
+		try (InputStream resInput = getClass().getResourceAsStream(RESOURCE_PDF);
+				PDDocument pdfTemplate = PDDocument.load(resInput);
+				PDDocument document = new PDDocument()) {
+			document.importPage(pdfTemplate.getPage(0));
+			// Meta-data
+			document.getDocumentInformation().setTitle("COVID-19 - Déclaration de déplacement");
+			document.getDocumentInformation().setSubject("Attestation de déplacement dérogatoire");
+			document.getDocumentInformation()
+					.setKeywords("covid19 covid-19 attestation déclaration déplacement officielle gouvernement");
+			document.getDocumentInformation().setProducer("DNUM/SDIT");
+			document.getDocumentInformation().setCreator("");
+			document.getDocumentInformation().setAuthor("Ministère de l'intérieur");
+			Calendar creationCalendar = Calendar.getInstance();
+			creationCalendar.setTime(Timestamp.valueOf(fromDate));
+			document.getDocumentInformation().setCreationDate(creationCalendar);
+			document.setVersion(1.7f);
 
-            // qr
-            String qrData = buildQrData(userProfile, reason, fromDate);
-            PDImageXObject pdImage = LosslessFactory.createFromImage(document, createQrImage(qrData));
+			// qr
+			String qrData = buildQrData(userProfile, reason, fromDate);
+			PDImageXObject pdImage = LosslessFactory.createFromImage(document, createQrImage(qrData));
 
-            // formulaire
-            PDPage page1 = document.getPage(0);
+			// formulaire
+			PDPage page1 = document.getPage(0);
 
-            try (PDPageContentStream contentStream = new PDPageContentStream(document, page1, AppendMode.APPEND, true)) {
-                drawText(contentStream, userProfile.prenom + " " + userProfile.nom, 119, 696);
-                drawText(contentStream, userProfile.dateNaissance, 119, 674);
-                drawText(contentStream, userProfile.lieuNaissance, 297, 674);
-                String adresseFq = userProfile.adresse + " " + userProfile.codePostal + " " + userProfile.ville;
-                int adresseFqSize = getIdealFontSize(adresseFq, 380, 7, 11);
-                drawText(contentStream, adresseFq, 133, 652, adresseFqSize);
-                drawText(contentStream, "x", 78, reason.getPdfPos(), 18);
-                int villeSize = getIdealFontSize(userProfile.ville, 250, 7, 11);
-                drawText(contentStream, userProfile.ville, 105, 174, villeSize);
-                drawText(contentStream, fromDate.format(formatterDate), 91, 152);
-                drawText(contentStream, fromDate.format(formatterTime), 264, 152);
-                // qr original size = 92f modified=115f
-                contentStream.drawImage(pdImage, page1.getMediaBox().getWidth() - 156f, 100f, 105f, 105f);
-            }
-            // page 2
-            PDPage page2 = new PDPage(page1.getMediaBox());
-            document.addPage(page2);
-            try (PDPageContentStream contentStream = new PDPageContentStream(document, page2, AppendMode.APPEND, true)) {
-                // qr pos source= 50,Height()-350 , 300x300
-                contentStream.drawImage(pdImage, 50f, page2.getMediaBox().getHeight() - 350f, 320f, 320f);
-            }
+			// String qrTitle1 = "QR-code contenant les informations ";
+			// String qrTitle2 = "de votre attestation numérique";
 
-            ByteArrayOutputStream pdfBuffer = new ByteArrayOutputStream();
+			try (PDPageContentStream contentStream = new PDPageContentStream(document, page1, AppendMode.APPEND,
+					true)) {
+				drawText(contentStream, userProfile.prenom + " " + userProfile.nom, 107, 657);
+				drawText(contentStream, userProfile.dateNaissance, 107, 627);
+				drawText(contentStream, userProfile.lieuNaissance, 240, 627);
+				String adresseFq = userProfile.adresse + " " + userProfile.codePostal + " " + userProfile.ville;
+				int adresseFqSize = getIdealFontSize(adresseFq, 380, 7, 11);
+				drawText(contentStream, adresseFq, 124, 596, adresseFqSize);
+				drawText(contentStream, "x", 59, reason.getPdfPos(), 12);
+				int villeSize = getIdealFontSize(userProfile.ville, 250, 7, 11);
+				drawText(contentStream, userProfile.ville, 93, 122, villeSize);
+				drawText(contentStream, fromDate.format(formatterDate), 76, 92);
+				drawText(contentStream, fromDate.format(formatterTime), 246, 92);
+				// qr original size = 92f modified=115f
+				// drawText(contentStream, qrTitle1 + "\n" + qrTitle2, 415, 135, 9);
+				contentStream.drawImage(pdImage, page1.getMediaBox().getWidth() - 156f, 25f, 92f, 92f);
+			}
+			// page 2
+			PDPage page2 = new PDPage(page1.getMediaBox());
+			document.addPage(page2);
+			try (PDPageContentStream contentStream = new PDPageContentStream(document, page2, AppendMode.APPEND,
+					true)) {
+				// drawText(contentStream, qrTitle1 + "\n" + qrTitle2, 50, (int) page2.getMediaBox().getHeight() - 70,
+				// 11);
+				// qr pos source= 50,Height()-350 , 300x300
+				contentStream.drawImage(pdImage, 50f, page2.getMediaBox().getHeight() - 390f, 320f, 320f);
+			}
 
-            document.save(pdfBuffer);
-            return pdfBuffer.toByteArray();
+			ByteArrayOutputStream pdfBuffer = new ByteArrayOutputStream();
 
-        } catch (IOException e) {
-            throw new UncheckedIOException(e);
-        }
-    }
+			document.save(pdfBuffer);
+			return pdfBuffer.toByteArray();
 
-    protected String buildQrData(UserProfile userProfile, Reason reason, LocalDateTime fromDate) {
-        StringBuilder sb = new StringBuilder();
-        sb.append("Cree le: " + fromDate.format(formatterDate) + " a " + fromDate.format(formatterTime).replace(":", "h"));
-        sb.append(";\n");
-        sb.append("Nom: " + userProfile.nom);
-        sb.append(";\n");
-        sb.append("Prenom: " + userProfile.prenom);
-        sb.append(";\n");
-        sb.append("Naissance: " + userProfile.dateNaissance + " a " + userProfile.lieuNaissance);
-        sb.append(";\n");
-        sb.append("Adresse: " + userProfile.adresse + " " + userProfile.codePostal + " " + userProfile.ville);
-        sb.append(";\n");
-        sb.append("Sortie: " + fromDate.format(formatterDate) + " a " + fromDate.format(formatterTime));
-        sb.append(";\n");
-        sb.append("Motifs: " + reason);
+		} catch (IOException e) {
+			throw new UncheckedIOException(e);
+		}
+	}
 
-        return sb.toString();
-    }
+	protected String buildQrData(UserProfile userProfile, Reason reason, LocalDateTime fromDate) {
+		StringBuilder sb = new StringBuilder();
+		sb.append("Cree le: " + fromDate.format(formatterDate) + " a "
+				+ fromDate.format(formatterTime).replace(":", "h"));
+		sb.append(";\n");
+		sb.append("Nom: " + userProfile.nom);
+		sb.append(";\n");
+		sb.append("Prenom: " + userProfile.prenom);
+		sb.append(";\n");
+		sb.append("Naissance: " + userProfile.dateNaissance + " a " + userProfile.lieuNaissance);
+		sb.append(";\n");
+		sb.append("Adresse: " + userProfile.adresse + " " + userProfile.codePostal + " " + userProfile.ville);
+		sb.append(";\n");
+		sb.append("Sortie: " + fromDate.format(formatterDate) + " a " + fromDate.format(formatterTime));
+		sb.append(";\n");
+		sb.append("Motifs: " + reason);
 
-    protected BufferedImage createQrImage(String qrData) {
-        try {
-            QRCodeWriter qrCodeWriter = new QRCodeWriter();
-            Map<EncodeHintType, Object> hints = new HashMap<>();
-            hints.put(EncodeHintType.ERROR_CORRECTION, ErrorCorrectionLevel.M);
-            hints.put(EncodeHintType.MARGIN, 1);
-            BitMatrix bitMatrix = qrCodeWriter.encode(qrData, BarcodeFormat.QR_CODE, 220, 220, hints);
-            return MatrixToImageWriter.toBufferedImage(bitMatrix);
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
-    }
+		return sb.toString();
+	}
 
-    protected void drawText(PDPageContentStream contentStream, String text, int x, int y) throws IOException {
-        drawText(contentStream, text, x, y, 11);
-    }
+	protected BufferedImage createQrImage(String qrData) {
+		try {
+			QRCodeWriter qrCodeWriter = new QRCodeWriter();
+			Map<EncodeHintType, Object> hints = new HashMap<>();
+			hints.put(EncodeHintType.ERROR_CORRECTION, ErrorCorrectionLevel.M);
+			hints.put(EncodeHintType.MARGIN, 1);
+			BitMatrix bitMatrix = qrCodeWriter.encode(qrData, BarcodeFormat.QR_CODE, 220, 220, hints);
+			return MatrixToImageWriter.toBufferedImage(bitMatrix);
+		} catch (Exception e) {
+			throw new RuntimeException(e);
+		}
+	}
 
-    protected void drawText(PDPageContentStream contentStream, String text, int x, int y, int fontSize) throws IOException {
-        contentStream.beginText();
-        contentStream.setFont(font, fontSize);
-        contentStream.newLineAtOffset(x, y);
-        contentStream.showText(text);
-        contentStream.endText();
-    }
+	protected void drawText(PDPageContentStream contentStream, String text, int x, int y) throws IOException {
+		drawText(contentStream, text, x, y, 11);
+	}
 
-    protected int getIdealFontSize(String text, int maxWidth, int minSize, int defaultSize) throws IOException {
-        int currentSize = defaultSize;
-        // https://stackoverflow.com/questions/13701017/calculation-string-width-in-pdfbox-seems-only-to-count-characters
-        float textWidth = font.getStringWidth(text) / 1000 * defaultSize;
+	protected void drawText(PDPageContentStream contentStream, String text, int x, int y, int fontSize)
+			throws IOException {
+		// en cas de multi line
+		String[] lines = text.split("\n");
+		contentStream.beginText();
+		contentStream.setFont(font, fontSize);
+		contentStream.newLineAtOffset(x, y);
+		contentStream.showText(lines[0]);
+		for (int i = 1, len = lines.length; i < len; i++) {
+			contentStream.newLine();
+			contentStream.showText(lines[0]);
+		}
+		contentStream.endText();
+	}
 
-        while (textWidth > maxWidth && currentSize > minSize) {
-            textWidth = font.getStringWidth(text) / 1000 * (--currentSize);
-        }
-        return textWidth > maxWidth ? minSize : currentSize;
-    }
+	protected int getIdealFontSize(String text, int maxWidth, int minSize, int defaultSize) throws IOException {
+		int currentSize = defaultSize;
+		// https://stackoverflow.com/questions/13701017/calculation-string-width-in-pdfbox-seems-only-to-count-characters
+		float textWidth = font.getStringWidth(text) / 1000 * defaultSize;
+
+		while (textWidth > maxWidth && currentSize > minSize) {
+			textWidth = font.getStringWidth(text) / 1000 * (--currentSize);
+		}
+		return textWidth > maxWidth ? minSize : currentSize;
+	}
 
 }
