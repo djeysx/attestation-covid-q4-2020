@@ -3,15 +3,15 @@ package org.djeysx.attestation_covid_q4_2020.service;
 public enum Reason {
     /* https://github.com/LAB-MI/attestation-deplacement-derogatoire-q4-2020/blob/main/src/js/pdf-util.js*/
 
-    travail(488), //
-    achats(417), //
-    sante(347), //
-    famille(325), //
-    handicap(291), //
-    sport_animaux(269), //
-    convocation(199), //
-    missions(178), //
-    enfants(157);
+    travail(553), //
+    achats_culturel_cultuel(482), //
+    sante(434), //
+    famille(410), //
+    handicap(373), //
+    sport_animaux(349), //
+    convocation(276), //
+    missions(252), //
+    enfants(228);
 
     private int pdfPos;
 

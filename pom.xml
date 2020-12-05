@@ -4,7 +4,7 @@
 
 	<groupId>org.djeysx</groupId>
 	<artifactId>attestation-covid-q4-2020</artifactId>
-	<version>1.1.0</version>
+	<version>1.2.0</version>
 	<name>attestation-covid-q4-2020</name>
 
 	<parent>

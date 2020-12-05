@@ -69,17 +69,17 @@ public class PdfGeneratorService {
 
 			try (PDPageContentStream contentStream = new PDPageContentStream(document, page1, AppendMode.APPEND,
 					true)) {
-				drawText(contentStream, userProfile.prenom + " " + userProfile.nom, 107, 657);
-				drawText(contentStream, userProfile.dateNaissance, 107, 627);
-				drawText(contentStream, userProfile.lieuNaissance, 240, 627);
+				drawText(contentStream, userProfile.prenom + " " + userProfile.nom, 92, 702);
+				drawText(contentStream, userProfile.dateNaissance, 92, 684);
+				drawText(contentStream, userProfile.lieuNaissance, 214, 684);
 				String adresseFq = userProfile.adresse + " " + userProfile.codePostal + " " + userProfile.ville;
 				int adresseFqSize = getIdealFontSize(adresseFq, 380, 7, 11);
-				drawText(contentStream, adresseFq, 124, 596, adresseFqSize);
-				drawText(contentStream, "x", 59, reason.getPdfPos(), 12);
+				drawText(contentStream, adresseFq, 104, 665, adresseFqSize);
+				drawText(contentStream, "x", 47, reason.getPdfPos(), 12);
 				int villeSize = getIdealFontSize(userProfile.ville, 250, 7, 11);
-				drawText(contentStream, userProfile.ville, 93, 122, villeSize);
-				drawText(contentStream, fromDate.format(formatterDate), 76, 92);
-				drawText(contentStream, fromDate.format(formatterTime), 246, 92);
+				drawText(contentStream, userProfile.ville, 78, 76, villeSize);
+				drawText(contentStream, fromDate.format(formatterDate), 63, 58);
+				drawText(contentStream, fromDate.format(formatterTime), 227, 58);
 				// qr original size = 92f modified=115f
 				// drawText(contentStream, qrTitle1 + "\n" + qrTitle2, 415, 135, 9);
 				contentStream.drawImage(pdImage, page1.getMediaBox().getWidth() - 156f, 25f, 92f, 92f);
@@ -147,6 +147,7 @@ public class PdfGeneratorService {
 		// en cas de multi line
 		String[] lines = text.split("\n");
 		contentStream.beginText();
+		contentStream.setNonStrokingColor(0f, 0f, 0f);
 		contentStream.setFont(font, fontSize);
 		contentStream.newLineAtOffset(x, y);
 		contentStream.showText(lines[0]);

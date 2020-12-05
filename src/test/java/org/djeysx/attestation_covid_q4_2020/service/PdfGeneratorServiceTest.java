@@ -23,7 +23,7 @@ public class PdfGeneratorServiceTest {
         userProfile.codePostal = "12345";
         userProfile.ville = "La Mote Beuvron 1234 12312342 1234 1234 1234";
 
-        byte[] pdf = pdfGeneratorService.generatePdf(userProfile, Reason.achats, LocalDateTime.now());
+        byte[] pdf = pdfGeneratorService.generatePdf(userProfile, Reason.achats_culturel_cultuel, LocalDateTime.now());
         Files.write(Paths.get("target/result.pdf"), pdf, StandardOpenOption.CREATE, StandardOpenOption.TRUNCATE_EXISTING);
     }
 
